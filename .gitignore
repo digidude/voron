@@ -1,0 +1,27 @@
+# Whitelist: this folder is a copy of the Pi's home directory.
+# Only config, docs and test prints are tracked.
+/*
+!/.gitignore
+!/README.md
+!/docs/
+!/test_prints/
+!/printer_data/
+/printer_data/*
+!/printer_data/config/
+!/printer_data/config_v2/
+
+# Inside the original config: secrets, auto-backups, theme images
+/printer_data/config/deprecated_config/telegram_config.conf
+/printer_data/config/printer-20*.cfg
+/printer_data/config/.theme/
+/printer_data/config/.moonraker.conf.bkp
+
+# Ellis' STLs: no redistribution license
+/test_prints/01_first_layer/First_Layer_Patch-*.stl
+/test_prints/04_flow_em_cubes/*.stl
+/test_prints/04_flow_em_cubes/labeled_*/
+
+# Klipper writes this on the Pi; never commit it
+variables.cfg
+
+.DS_Store

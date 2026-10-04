@@ -1,0 +1,3 @@
+#### Raspi Corner Camera
+#[cam 1]
+camera="auto"
