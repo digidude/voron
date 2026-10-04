@@ -1,0 +1,17 @@
+######################################################################
+##  experimental/adxl_rp2040.cfg.disabled
+##  Your old external accelerometer (RP2040 board + ADXL345 on USB).
+##  Disabled because Beacon's built-in accelerometer does the same job
+##  (see [resonance_tester] in hardware/beacon.cfg) and Klipper refuses to
+##  start if an [mcu] listed in the config is unplugged.
+##  To use it: plug it in, rename this file to .cfg, and change
+##  accel_chip in hardware/beacon.cfg to: adxl345
+######################################################################
+
+[mcu adxl]
+serial: /dev/serial/by-id/usb-Klipper_rp2040_E66118C4E360AC28-if00
+
+[adxl345]
+cs_pin: adxl:gpio1
+spi_bus: spi0a
+axes_map: x,z,y
