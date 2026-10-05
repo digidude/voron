@@ -1,0 +1,86 @@
+solid warp_bar_150x20x5
+facet normal -1 0 0
+ outer loop
+  vertex 0.000 0.000 5.000
+  vertex 0.000 20.000 5.000
+  vertex 0.000 0.000 0.000
+ endloop
+endfacet
+facet normal -1 0 -0
+ outer loop
+  vertex 0.000 20.000 5.000
+  vertex 0.000 20.000 0.000
+  vertex 0.000 0.000 0.000
+ endloop
+endfacet
+facet normal 1 0 0
+ outer loop
+  vertex 150.000 20.000 5.000
+  vertex 150.000 0.000 5.000
+  vertex 150.000 0.000 0.000
+ endloop
+endfacet
+facet normal 1 0 -0
+ outer loop
+  vertex 150.000 20.000 0.000
+  vertex 150.000 20.000 5.000
+  vertex 150.000 0.000 0.000
+ endloop
+endfacet
+facet normal 0 -1 0
+ outer loop
+  vertex 150.000 0.000 0.000
+  vertex 150.000 0.000 5.000
+  vertex 0.000 0.000 0.000
+ endloop
+endfacet
+facet normal -0 -1 0
+ outer loop
+  vertex 150.000 0.000 5.000
+  vertex 0.000 0.000 5.000
+  vertex 0.000 0.000 0.000
+ endloop
+endfacet
+facet normal 0 1 0
+ outer loop
+  vertex 150.000 20.000 5.000
+  vertex 150.000 20.000 0.000
+  vertex 0.000 20.000 0.000
+ endloop
+endfacet
+facet normal -0 1 0
+ outer loop
+  vertex 0.000 20.000 5.000
+  vertex 150.000 20.000 5.000
+  vertex 0.000 20.000 0.000
+ endloop
+endfacet
+facet normal 0 -0 -1
+ outer loop
+  vertex 150.000 20.000 0.000
+  vertex 150.000 0.000 0.000
+  vertex 0.000 0.000 0.000
+ endloop
+endfacet
+facet normal 0 0 -1
+ outer loop
+  vertex 0.000 20.000 0.000
+  vertex 150.000 20.000 0.000
+  vertex 0.000 0.000 0.000
+ endloop
+endfacet
+facet normal 0 -0 1
+ outer loop
+  vertex 150.000 0.000 5.000
+  vertex 150.000 20.000 5.000
+  vertex 0.000 0.000 5.000
+ endloop
+endfacet
+facet normal 0 0 1
+ outer loop
+  vertex 150.000 20.000 5.000
+  vertex 0.000 20.000 5.000
+  vertex 0.000 0.000 5.000
+ endloop
+endfacet
+endsolid warp_bar_150x20x5
