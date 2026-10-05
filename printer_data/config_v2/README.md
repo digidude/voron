@@ -23,10 +23,10 @@ hardware/
 macros/
   print_start_end.cfg       PRINT_START (retry-aware) / PRINT_END
   cancel_keep_hot.cfg       cancel = park + keep warm 15 min
-  nozzle_clean.cfg          CLEAN_NOZZLE, BUCKET_PRIME, PURGE_LINE
+  nozzle_clean.cfg          NOZZLE_CLEAN, NOZZLE_PRIME, NOZZLE_PURGE_LINE
   utility.cfg               G32, PARK_*, PREHEAT, COOLDOWN, LOAD/UNLOAD, M600
-  calibration.cfg           PID_*, SHAPER_CALIBRATE_ALL, BEACON_CALIBRATE_HOT, FIRST_LAYER_CHECK
-  debug.cfg                 DUMP_VARIABLES, GET_VARIABLE
+  calibration.cfg           CAL_PID_*, CAL_INPUT_SHAPER, CAL_BEACON_HOT, CAL_FIRST_LAYER
+  debug.cfg                 _DUMP_VARIABLES, _GET_VARIABLE
 experimental/               auto-included playground (*.cfg)
 moonraker.conf              cleaned up
 ```
@@ -82,7 +82,7 @@ moonraker.conf              cleaned up
 - **Chamber thermistor:** template included. Recommended ~$2 upgrade.
 - **Input shaper:** `[resonance_tester]` uses Beacon's built-in accelerometer. Your old RP2040/ADXL board is kept as `experimental/adxl_rp2040.cfg.disabled`.
 - **Utility macros:** `PREHEAT`, `COOLDOWN`, `KEEP_HOT`, `PARK_FRONT`, `LOAD_FILAMENT`, `UNLOAD_FILAMENT`, `M600`.
-- **Calibration macros:** `PID_EXTRUDER`, `PID_BED`, `SHAPER_CALIBRATE_ALL`, `BEACON_CALIBRATE_HOT`, `FIRST_LAYER_CHECK`.
+- **Calibration macros:** `CAL_PID_EXTRUDER`, `CAL_PID_BED`, `CAL_INPUT_SHAPER`, `CAL_BEACON_HOT`, `CAL_FIRST_LAYER`.
 - **Case lights:** the macros are one-line `SET_LED` calls now.
 - **moonraker.conf:**
   - Object processing on.
@@ -103,6 +103,52 @@ moonraker.conf              cleaned up
 - **Tuning results:** input shaper (ei 65.2 / mzv 41.8), and the entire SAVE_CONFIG block (PID values, Beacon model, saved mesh).
 - **Peripherals:** brush, bucket and purge positions, fan pins, LED colours.
 
+## Macro cleanup (2026-10-04)
+
+Goal: a tidy Mainsail Macros panel. Backup of the pre-cleanup files: `printer_data/config_v2.bak-2026-10-04-pre-macro-cleanup/`.
+
+**Naming convention** (also documented at the top of the macro includes in `printer.cfg`):
+
+- `UPPER_CASE` = a command you run by hand; shows as a button.
+- `_anything` = internal helper or console tool; Mainsail hides it.
+- Prefixes so related buttons sort together: `CAL_*`, `LIGHTS_*`, `NOZZLE_*`, `PARK_*`.
+- Left alone on purpose because other tools look for these names: `PRINT_START`/`PRINT_END` (Orca), `G32`, `M600`, `LOAD_FILAMENT`/`UNLOAD_FILAMENT` (Mainsail and KlipperScreen load/unload buttons), `PAUSE`/`RESUME`/`CANCEL_PRINT` (Mainsail).
+
+**Renames**
+
+| Old | New | Why |
+|---|---|---|
+| `status_*` (11 macros) | `_status_*` | Internal LED helpers; hidden |
+| `set_logo_leds_off`, `set_nozzle_leds_on/off` | `_set_...` | Internal LED helpers; hidden |
+| `DUMP_VARIABLES`, `GET_VARIABLE` | `_DUMP_VARIABLES`, `_GET_VARIABLE` | Console tools; hidden but still autocomplete in the console |
+| `CASE_LIGHTS_WHITE/OFF/NIGHT` | `LIGHTS_CASE_WHITE/OFF/NIGHT` | Prefix grouping |
+| `PID_EXTRUDER`, `PID_BED` | `CAL_PID_EXTRUDER`, `CAL_PID_BED` | Prefix grouping |
+| `SHAPER_CALIBRATE_ALL` | `CAL_INPUT_SHAPER` | Prefix grouping |
+| `BEACON_CALIBRATE_HOT` | `CAL_BEACON_HOT` | Prefix grouping |
+| `FIRST_LAYER_CHECK` | `CAL_FIRST_LAYER` | Prefix grouping |
+| `CLEAN_NOZZLE`, `BUCKET_PRIME`, `PURGE_LINE` | `NOZZLE_CLEAN`, `NOZZLE_PRIME`, `NOZZLE_PURGE_LINE` | Prefix grouping |
+| `fast_motion_demo` | (disabled) | `experimental/demo_motion_macros.cfg` renamed to `.cfg.disabled` |
+
+All internal calls were updated. Every visible macro has a `description:`. Re-tested in the Klipper simulator (same Klipper version, STM32F446 dictionary, Beacon stubbed out because it needs its own MCU): G32, PRINT_START (full and retry), PRINT_END, CANCEL_PRINT + keep-hot, every renamed macro, and the debug tools all ran with no unknown-command or template errors. The old names correctly come back as "Unknown command".
+
+**Result:** 28 visible macros (22 of ours + 6 from Mainsail), down from 45. The groups below show only the ones that make sense for what the printer is doing.
+
+### Mainsail macro groups (do this in the Mainsail UI)
+
+Mainsail stores groups in its own database, not in the Klipper config, so this step is manual. Go to **Settings → Macros**, switch **Management** to **Expert**, then add these groups. In Expert mode, a macro that isn't in any group doesn't appear on the dashboard, which is how `PRINT_START`, `PRINT_END` and `SET_PRINT_STATS_INFO` stay off it (Orca calls those).
+
+| Group | Show when | Macros |
+|---|---|---|
+| **Print** | printing, paused | PAUSE, RESUME, CANCEL_PRINT, M600, SET_PAUSE_NEXT_LAYER, SET_PAUSE_AT_LAYER |
+| **Prep** | standby | PREHEAT, COOLDOWN, G32, KEEP_HOT, LOAD_FILAMENT, UNLOAD_FILAMENT |
+| **Toolhead** | standby, paused | PARK_FRONT, PARK_REAR, NOZZLE_CLEAN, NOZZLE_PRIME, NOZZLE_PURGE_LINE |
+| **Calibration** | standby (collapsed) | CAL_FIRST_LAYER, CAL_BEACON_HOT, CAL_PID_EXTRUDER, CAL_PID_BED, CAL_INPUT_SHAPER |
+| **Lights** | always | LIGHTS_CASE_WHITE, LIGHTS_CASE_NIGHT, LIGHTS_CASE_OFF |
+
+Tip: color the Print group red (PAUSE and CANCEL should be easy to find) and Calibration a muted color.
+
+**If you use these anywhere else, update them:** KlipperScreen custom menus, Mainsail console history, or Orca G-code that called `CLEAN_NOZZLE`/`PURGE_LINE` directly. Orca's standard start line (`PRINT_START ...`) is unchanged.
+
 ## Orca changes to pair with this (in the slicer, not here)
 
 - **Filament flow ratio:** ASA is currently 0.926. Run Orca's flow calibration; if you don't, try 0.95–1.0 for first-layer adhesion.
@@ -114,5 +160,5 @@ moonraker.conf              cleaned up
 
 1. **Chamber thermistor:** see `hardware/sensors.cfg`.
 2. **Thermal expansion calibration:** [BeaconPrinterTools](https://github.com/YanceyA/BeaconPrinterTools) measures your nozzle's expansion and sets `z_hot_offset` automatically for each print temperature.
-3. **Re-run tuning:** `SHAPER_CALIBRATE_ALL` and pressure-advance tuning in Orca.
+3. **Re-run tuning:** `CAL_INPUT_SHAPER` and pressure-advance tuning in Orca.
 4. **Mechanical checks:** belt tension (including matched Z belts), bed mounting (one bolt fixed, the others free to slide), and a clean PEI sheet (dish soap and water).
