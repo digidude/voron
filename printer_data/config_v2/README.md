@@ -2,6 +2,13 @@
 
 This is a clean rebuild of the Klipper config. The layout follows the official Voron 2.4 / BTT Octopus reference config, and the probing sequence follows Beacon's documentation. All machine-specific values are carried over from your old config. Drafted 2026-10-03.
 
+## Related
+
+- **Handoff Guide** (overview, decisions, and the results log for test prints): https://claude.ai/artifact/BYiP8vtwQ9XhrJBHuGidYb
+- **Orca Slicer from Scratch** (slicer setup to pair with this config): https://claude.ai/artifact/4QghdcxjAcYA2dbD4WtgKx
+- **Test prints**: `voron/test_prints/README.md` on the Mac copy (`../../test_prints/` from here). 10 calibration steps in order, STLs included. These stay on the Mac; they don't get copied to the Pi.
+- **History:** `config/proposed/` held the first Step 2 drafts (PRINT_START, keep-hot, exhaust). All of that is folded into this folder; `proposed/` is kept only for reference. `config/deprecated_config/` and `config/active_config/` are the original files from the Pi; see Install step 2.
+
 ## How it was checked
 
 - **Real Klipper, simulated printer.** The config was loaded by the same Klipper version as your Pi (v0.13.0-419) in batch mode, using an STM32F446 build of the firmware. Klipper accepted every section with no errors or deprecation warnings. Every macro ran to completion, including a simulated print, a cancel, a retry, PRINT_END, G32, M600/RESUME and the utility macros.
@@ -18,7 +25,7 @@ hardware/
   bed.cfg                   bed heater
   beacon.cfg                Beacon, QGL, bed mesh, resonance tester
   fans.cfg                  all fans + _EXHAUST policy
-  leds.cfg                  case lights + Stealthburner LEDs + STATUS_ macros
+  leds.cfg                  case lights + Stealthburner LEDs + hidden _status_ macros
   sensors.cfg               Octopus/Pi temps + chamber thermistor template
 macros/
   print_start_end.cfg       PRINT_START (retry-aware) / PRINT_END
@@ -26,7 +33,7 @@ macros/
   nozzle_clean.cfg          NOZZLE_CLEAN, NOZZLE_PRIME, NOZZLE_PURGE_LINE
   utility.cfg               G32, PARK_*, PREHEAT, COOLDOWN, LOAD/UNLOAD, M600
   calibration.cfg           CAL_PID_*, CAL_INPUT_SHAPER, CAL_BEACON_HOT, CAL_FIRST_LAYER
-  debug.cfg                 _DUMP_VARIABLES, _GET_VARIABLE
+  debug.cfg                 VIEW_VARIABLES (+ _DUMP_VARIABLES, _GET_VARIABLE)
 experimental/               auto-included playground (*.cfg)
 moonraker.conf              cleaned up
 ```
@@ -36,10 +43,11 @@ moonraker.conf              cleaned up
 1. **Back up the current config.**
    `cp -r ~/printer_data/config ~/printer_data/config_backup_$(date +%F)`
 2. **Archive the clutter.** Move the 25 `printer-2024*.cfg` / `printer-2025*.cfg` backups, `active_config/` and `deprecated_config/` into a folder named `archive/`. Klipper ignores any file that nothing includes, so this is only for tidiness.
-3. **Copy in the new files.** Copy everything from `config_v2/` into `~/printer_data/config/`: `printer.cfg`, `hardware/`, `macros/`, `experimental/` and `moonraker.conf`. Keep your existing `KlipperScreen.conf`, `crowsnest.conf` and `sonar.conf`; they're unchanged.
-4. **Check the Pi username.** The first include in `printer.cfg` assumes it's `pi`: `/home/pi/mainsail-config/mainsail.cfg`. If it isn't, fix that path.
-5. **Restart.** Restart Moonraker, then run `FIRMWARE_RESTART` from Mainsail.
-6. **First test, supervised.** Home, run `G32`, then a small ASA print. Watch the `PS:` lines in the console.
+3. **Copy in the new files.** Copy everything from `config_v2/` into `~/printer_data/config/`: `printer.cfg`, `hardware/`, `macros/`, `experimental/` and `moonraker.conf`. Also copy the new `KlipperScreen.conf` (adds the View Variables menu; your existing settings are preserved at the bottom). Keep your existing `crowsnest.conf` and `sonar.conf`; they're unchanged.
+4. **Create the save-variables file.** Klipper won't start without it: `touch ~/printer_data/config/variables.cfg`
+5. **Check the Pi username.** The first include in `printer.cfg` assumes it's `pi`: `/home/pi/mainsail-config/mainsail.cfg`. If it isn't, fix that path.
+6. **Restart.** Restart Moonraker, then run `FIRMWARE_RESTART` from Mainsail.
+7. **First test, supervised.** Home, run `G32`, then a small PLA print (dial in with PLA first). Watch the `PS:` lines in the console.
 
 **Rollback:** copy the backup folder back and run `FIRMWARE_RESTART`.
 
@@ -131,7 +139,7 @@ Goal: a tidy Mainsail Macros panel. Backup of the pre-cleanup files: `printer_da
 
 All internal calls were updated. Every visible macro has a `description:`. Re-tested in the Klipper simulator (same Klipper version, STM32F446 dictionary, Beacon stubbed out because it needs its own MCU): G32, PRINT_START (full and retry), PRINT_END, CANCEL_PRINT + keep-hot, every renamed macro, and the debug tools all ran with no unknown-command or template errors. The old names correctly come back as "Unknown command".
 
-**Result:** 28 visible macros (22 of ours + 6 from Mainsail), down from 45. The groups below show only the ones that make sense for what the printer is doing.
+**Result:** 28 visible macros (22 of ours + 6 from Mainsail), down from 45 (29 with VIEW_VARIABLES, added later). The groups below show only the ones that make sense for what the printer is doing.
 
 ### Mainsail macro groups (do this in the Mainsail UI)
 
@@ -144,10 +152,28 @@ Mainsail stores groups in its own database, not in the Klipper config, so this s
 | **Toolhead** | standby, paused | PARK_FRONT, PARK_REAR, NOZZLE_CLEAN, NOZZLE_PRIME, NOZZLE_PURGE_LINE |
 | **Calibration** | standby (collapsed) | CAL_FIRST_LAYER, CAL_BEACON_HOT, CAL_PID_EXTRUDER, CAL_PID_BED, CAL_INPUT_SHAPER |
 | **Lights** | always | LIGHTS_CASE_WHITE, LIGHTS_CASE_NIGHT, LIGHTS_CASE_OFF |
+| **Learn** | always | VIEW_VARIABLES |
 
 Tip: color the Print group red (PAUSE and CANCEL should be easy to find) and Calibration a muted color.
 
 **If you use these anywhere else, update them:** KlipperScreen custom menus, Mainsail console history, or Orca G-code that called `CLEAN_NOZZLE`/`PURGE_LINE` directly. Orca's standard start line (`PRINT_START ...`) is unchanged.
+
+## View Variables (2026-10-04)
+
+One read-only button for "what is the printer thinking?" Safe to press mid-print. Output goes to the console. Backup of the files before this change: `printer_data/config_v2.bak-2026-10-04-pre-view-variables/`.
+
+| Command | Shows |
+|---|---|
+| `VIEW_VARIABLES` or `SHOW=tunables` | Your tunable settings: PRINT_START, keep-hot, brush/bucket positions, exhaust |
+| `VIEW_VARIABLES SHOW=state` | Homed, QGL, mesh, position, Z offset, temps, and whether the next PRINT_START takes the RETRY path (with the reason if not) |
+| `VIEW_VARIABLES NAME=<text>` | Free search over everything (uses `_DUMP_VARIABLES`) |
+| `VIEW_VARIABLES PATH=<a.b>` | One exact value (uses `_GET_VARIABLE`) |
+
+- **Mainsail:** click the arrow on the VIEW_VARIABLES button to fill in SHOW / NAME / PATH. It's in the **Learn** group above.
+- **KlipperScreen:** a **View Variables** menu on the main screen and in the in-print menu, with My Settings, Printer State and Open Console buttons. Defined in `KlipperScreen.conf`.
+- To add another macro to the tunables list, edit `variable_macros` in `_VIEW_TUNABLES` (`macros/debug.cfg`).
+
+Tested in the Klipper simulator (cold start, after PRINT_START, after a cancel, after COOLDOWN, all four modes). `KlipperScreen.conf` was loaded with KlipperScreen's own config parser: no errors, and the menus appear in both menus.
 
 ## Orca changes to pair with this (in the slicer, not here)
 
@@ -160,5 +186,5 @@ Tip: color the Print group red (PAUSE and CANCEL should be easy to find) and Cal
 
 1. **Chamber thermistor:** see `hardware/sensors.cfg`.
 2. **Thermal expansion calibration:** [BeaconPrinterTools](https://github.com/YanceyA/BeaconPrinterTools) measures your nozzle's expansion and sets `z_hot_offset` automatically for each print temperature.
-3. **Re-run tuning:** `CAL_INPUT_SHAPER` and pressure-advance tuning in Orca.
+3. **Re-run tuning:** work through `test_prints/README.md` in order (first layer → size → temp → flow → pressure advance → input shaper check → ABS warp). `CAL_INPUT_SHAPER` comes before step 06. Log results in the Handoff Guide.
 4. **Mechanical checks:** belt tension (including matched Z belts), bed mounting (one bolt fixed, the others free to slide), and a clean PEI sheet (dish soap and water).
