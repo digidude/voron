@@ -94,7 +94,7 @@ moonraker.conf              cleaned up
 - **Case lights:** the macros are one-line `SET_LED` calls now.
 - **moonraker.conf:**
   - Object processing on.
-  - Beacon updates on the `stable` channel.
+  - Beacon updater left on `dev` (Beacon's official setting; its last tagged release is from 2024).
   - Removed the unused Telegram and LED-effect updater entries (notes inside if you want them back).
 
 ### Removed
