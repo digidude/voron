@@ -13,7 +13,7 @@ The goal of the overhaul: first layers that stick, and a failed print that retri
 | [`printer_data/config_v2/`](printer_data/config_v2/) | **The new config.** Its [README](printer_data/config_v2/README.md) has the install steps, rollback, and every change with the reason |
 | [`printer_data/config/`](printer_data/config/) | The original config as copied from the Pi on 2026-10-03, kept for comparison. `proposed/` holds the first Step 2 drafts (superseded by `config_v2`) |
 | [`test_prints/`](test_prints/) | Calibration prints in the order to run them |
-| [`docs/notes/`](docs/notes/) | Working notes: the Step 1 review, the Step 2 drafts, and a config_v2 summary |
+| [`docs/notes/`](docs/notes/) | Working notes: the Step 1 review, the Step 2 drafts, a config_v2 summary, and the [Pi v1/v2 setup runbook](docs/notes/2026-10-07-pi-v1-v2-setup-runbook.md) |
 
 Live guides (shared docs, printable, export to PDF / Word / Markdown):
 
