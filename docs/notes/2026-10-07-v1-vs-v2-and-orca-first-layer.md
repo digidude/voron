@@ -87,10 +87,10 @@ Net: v1 = 4 homing passes + 81-point mesh every time. v2 = 1 home + 1 hot calibr
 
 | Setting | v1 | v2 |
 |---|---|---|
-| extruder `min_temp` | -200 | 0 (thermistor-fault detection back on) |
+| extruder `min_temp` | -200 | 0 (instant unplugged/broken-thermistor detection back on) |
 | extruder `min_extrude_temp` | 0 | 170 (cold-extrusion protection back on) |
 | heater_bed `min_temp` | -250 | 0 |
-| `[verify_heater]` extruder/bed | not set | added |
+| `[verify_heater]` extruder/bed | Klipper defaults (always on, just not written in the file) | same defaults, written out so they're visible |
 | extruder `max_extrude_only_distance` | default (50) | 120 (lets load/unload macros work) |
 
 ### 4. Fans
