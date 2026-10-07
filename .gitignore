@@ -5,6 +5,7 @@
 !/README.md
 !/docs/
 !/test_prints/
+!/scripts/
 !/printer_data/
 /printer_data/*
 !/printer_data/config/
