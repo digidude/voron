@@ -1,0 +1,43 @@
+UNIT FILE                     STATE   VENDOR PRESET
+avahi-daemon.service          enabled enabled
+console-setup.service         enabled enabled
+cron.service                  enabled enabled
+crowsnest.service             enabled enabled
+dhcpcd.service                enabled enabled
+dphys-swapfile.service        enabled enabled
+e2scrub_reap.service          enabled enabled
+fake-hwclock.service          enabled enabled
+getty@.service                enabled enabled
+keyboard-setup.service        enabled enabled
+klipper.service               enabled enabled
+KlipperScreen.service         enabled enabled
+moonraker-telegram.service    enabled enabled
+moonraker.service             enabled enabled
+networking.service            enabled enabled
+nginx.service                 enabled enabled
+raspberrypi-net-mods.service  enabled enabled
+rpi-display-backlight.service enabled enabled
+rpi-eeprom-update.service     enabled enabled
+rsync.service                 enabled enabled
+rsyslog.service               enabled enabled
+sonar.service                 enabled enabled
+ssh.service                   enabled enabled
+sshswitch.service             enabled enabled
+systemd-pstore.service        enabled enabled
+systemd-timesyncd.service     enabled enabled
+triggerhappy.service          enabled enabled
+udisks2.service               enabled enabled
+wpa_supplicant.service        enabled enabled
+avahi-daemon.socket           enabled enabled
+triggerhappy.socket           enabled enabled
+nfs-client.target             enabled enabled
+remote-fs.target              enabled enabled
+apt-daily-upgrade.timer       enabled enabled
+apt-daily.timer               enabled enabled
+e2scrub_all.timer             enabled enabled
+fstrim.timer                  enabled enabled
+logrotate.timer               enabled enabled
+man-db.timer                  enabled enabled
+
+39 unit files listed.
+

@@ -1,0 +1,14 @@
+# name  commit  branch  origin
+klipper 461c4e3722c3a897fba1c6b3f0780a5315043842 master https://github.com/Klipper3d/klipper.git
+moonraker 9e676eba6b02661a4dfa3ec6e7ac3f3504498e6d master https://github.com/Arksine/moonraker.git
+mainsail-config ff3869a621db17ce3ef660adbbd3fa321995ac42 master https://github.com/mainsail-crew/mainsail-config.git
+KlipperScreen f2eb6919c0fcbcd4bab91ba59a5708415963d2ac master https://github.com/jordanruthe/KlipperScreen.git
+crowsnest cf936dabdcf6a3d1eb0138d8eea9044745b40db6 master https://github.com/mainsail-crew/crowsnest.git
+sonar 74494cc37e415e7c43e9e497d53fbabc252a5b40 main https://github.com/mainsail-crew/sonar.git
+beacon_klipper 3eb0134607664734ccf5cd94cb51840e1c8b27b3 master https://github.com/beacon3d/beacon_klipper.git
+mainsail v2.19.0
+
+# Klipper extras that are symlinks or non-stock (e.g. beacon.py)
+/home/pi/klipper-led_effect/src/led_effect.py
+/home/pi/beacon_klipper/beacon.py
+
