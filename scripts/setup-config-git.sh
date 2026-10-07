@@ -45,6 +45,10 @@ cat > .gitignore <<'GI'
 /variables.cfg
 /printer-2*.cfg
 /.moonraker.conf.bkp
+/.theme/
+# Secrets: keep out of git even though this repo is local
+deprecated_config/telegram_config.conf
+moonraker.secrets
 .DS_Store
 GI
 git add -A
